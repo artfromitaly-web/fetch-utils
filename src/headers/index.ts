@@ -1,10 +1,20 @@
-export type HeadersArguments = {
-  'Authorization': Authorization
-  'Set-Cookie': string
-  'Content-Type': `${MimeType}${'' | `; charset=${Charset}`}`
+import * as names from './names.js'
+
+export const header = names
+
+type Names = typeof names
+export type HeaderName = Names[keyof Names]
+
+type ManagedHeadersArgs = {
+  [names.Authorization]: Authorization
+  [names.SetCookie]: string
+  [names.ContentType]: `${MimeType}${'' | `; charset=${Charset}`}`
 }
-export type HeaderName = keyof HeadersArguments
-type HeaderValue<T extends HeaderName> = HeadersArguments[T]
+type ManagedHeaderName = keyof ManagedHeadersArgs
+
+export type HeadersArguments = {
+  [k in HeaderName]: k extends ManagedHeaderName ? ManagedHeadersArgs[k] : string
+}
 
 // #region MimeType
 const mimeTypes = {
@@ -56,7 +66,7 @@ type Authorization = `${AuthScheme} ${string}`
 export function setHeader<T extends HeaderName>(
   headers: Headers,
   name: T,
-  value: HeaderValue<T>
+  value: HeadersArguments[T]
 ) {
   return headers.set(name, value)
 }
@@ -64,14 +74,13 @@ export function setHeader<T extends HeaderName>(
 export function appendHeader<T extends HeaderName>(
   headers: Headers,
   name: T,
-  value: HeaderValue<T>
+  value: HeadersArguments[T]
 ) {
   return headers.append(name, value)
 }
 
-// TODO typification of the return value as HeaderValue<T> | null
 export function getHeader<T extends HeaderName>(headers: Headers, name: T) {
-  return headers.get(name)
+  return headers.get(name) as HeadersArguments[T] | null
 }
 
 export class HeadersBuilder {
@@ -80,12 +89,12 @@ export class HeadersBuilder {
     this._headers = new Headers()
   }
 
-  set<T extends HeaderName>(name: T, value: HeaderValue<T>) {
+  set<T extends HeaderName>(name: T, value: HeadersArguments[T]) {
     setHeader(this._headers, name, value)
     return this
   }
 
-  append<T extends HeaderName>(name: T, value: HeaderValue<T>) {
+  append<T extends HeaderName>(name: T, value: HeadersArguments[T]) {
     appendHeader(this._headers, name, value)
     return this
   }
