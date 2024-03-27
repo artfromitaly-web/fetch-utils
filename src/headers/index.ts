@@ -28,7 +28,7 @@ type MimeTypes_Subtype<T extends MimeTypes_Type> = MimeTypes[T][number]
 type MimeTypeString<T extends MimeTypes_Type> = `${T}/${MimeTypes_Subtype<T>}`
 
 type MimeType = MimeTypeString<'application'> | MimeTypeString<'text'>
-export function isContentType(x: unknown): x is MimeType {
+export function isMimeType(x: unknown): x is MimeType {
   if (typeof x === 'string') {
     const [type, subtype] = x.split('/')
     return isMimeTypes_Type(type) && (mimeTypes[type] as string[]).includes(subtype)
