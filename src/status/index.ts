@@ -1,3 +1,11 @@
+export type StatusCode = keyof typeof statusCode
+export function isStatusCode(x: unknown): x is StatusCode {
+  return (
+    (typeof x === 'number' || typeof x === 'string') &&
+    Object.keys(statusCode).includes(`${x}`)
+  )
+}
+
 export const status = {
   //#region Informational 1xx
 
@@ -568,5 +576,82 @@ export const status = {
   //#endregion
 }
 
-type Status = typeof status
-export type StatusCode = Status[keyof Status]['status']
+export const statusCode = {
+  //#region Informational 1xx
+  100: status.Continue,
+  101: status.SwitchingProtocol,
+  102: status.Processing,
+  103: status.EarlyHints,
+  //#endregion
+
+  //#region Successful 2xx
+  200: status.Ok,
+  201: status.Created,
+  202: status.Accepted,
+  203: status.NonAuthoritativeInformation,
+  204: status.NoContent,
+  205: status.ResetContent,
+  206: status.PartialContent,
+  207: status.MultiStatus,
+  208: status.AlreadyReported,
+  226: status.ImUsed,
+  //#endregion
+
+  //#region Redirects 3xx
+  300: status.MultipleChoices,
+  301: status.MovedPermanently,
+  302: status.Found,
+  303: status.SeeOther,
+  304: status.NotModified,
+  305: status.UseProxy,
+  306: status.SwitchProxy,
+  307: status.TemporaryRedirect,
+  308: status.PermanentRedirect,
+  //#endregion
+
+  //#region Client errors 4xx
+  400: status.BadRequest,
+  401: status.Unauthorized,
+  402: status.PaymentRequired,
+  403: status.Forbidden,
+  404: status.NotFound,
+  405: status.MethodNotAllowed,
+  406: status.NotAcceptable,
+  407: status.ProxyAuthenticationRequired,
+  408: status.RequestTimeout,
+  409: status.Conflict,
+  410: status.Gone,
+  411: status.LengthRequired,
+  412: status.PreconditionFailed,
+  413: status.PayloadTooLarge,
+  414: status.UriTooLong,
+  415: status.UnsupportedMediaType,
+  416: status.RangeNotSatisfiable,
+  417: status.ExpectationFailed,
+  418: status.ImAteapot,
+  421: status.MisdirectedRequest,
+  422: status.UnprocessableEntity,
+  423: status.Locked,
+  424: status.FailedDependency,
+  425: status.TooEarly,
+  426: status.UpgradeRequired,
+  428: status.PreconditionRequired,
+  429: status.TooManyRequests,
+  431: status.RequestHeaderFieldsTooLarge,
+  451: status.UnavailableForLegalReasons,
+  //#endregion
+
+  //#region Server errors 5xx
+  500: status.InternalServerError,
+  501: status.NotImplemented,
+  502: status.BadGateway,
+  503: status.ServiceUnavailable,
+  504: status.GatewayTimeout,
+  505: status.HttpVersionNotSupported,
+  506: status.VariantAlsoNegotiates,
+  507: status.InsufficientStorage,
+  508: status.LoopDetected,
+  510: status.NotExtended,
+  511: status.NetworkAuthenticationRequired
+  //#endregion
+}
