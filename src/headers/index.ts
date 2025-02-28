@@ -1,3 +1,4 @@
+import type { Cookie } from '../cookies/index.js'
 import * as names from './names.js'
 
 export const header = names
@@ -96,6 +97,11 @@ export class HeadersBuilder {
 
   append<T extends HeaderName>(name: T, value: HeadersArguments[T]) {
     appendHeader(this._headers, name, value)
+    return this
+  }
+
+  async cookie<T>(cookie: Cookie<T>, value: T) {
+    await cookie.write(value, this._headers)
     return this
   }
 
