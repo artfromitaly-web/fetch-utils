@@ -4,15 +4,15 @@ type Session<
   Data extends Record<string, unknown>,
   FlashData extends Record<string, unknown>
 > = {
-  get<Key extends keyof Data | keyof FlashData>(
+  get<Key extends (keyof Data | keyof FlashData) & string>(
     name: Key
   ):
     | (Key extends keyof Data ? Data[Key] : undefined)
     | (Key extends keyof FlashData ? FlashData[Key] : undefined)
     | undefined
-  set<Key extends keyof Data>(name: Key, value: Data[Key]): void
-  flash<Key extends keyof FlashData>(name: Key, value: FlashData[Key]): void
-  unset(name: keyof Data): void
+  set<Key extends keyof Data & string>(name: Key, value: Data[Key]): void
+  flash<Key extends keyof FlashData & string>(name: Key, value: FlashData[Key]): void
+  unset(name: keyof Data & string): void
 }
 
 type SaveFunction<
@@ -46,15 +46,18 @@ export function sessionStorage<
 
     const sessionBuilder = {
       get: session.get,
-      set: <Key extends keyof Data>(name: Key, value: Data[Key]) => {
+      set: <Key extends keyof Data & string>(name: Key, value: Data[Key]) => {
         session.set(name, value)
         return sessionBuilder
       },
-      flash: <Key extends keyof FlashData>(name: Key, value: FlashData[Key]) => {
+      flash: <Key extends keyof FlashData & string>(
+        name: Key,
+        value: FlashData[Key]
+      ) => {
         session.flash(name, value)
         return sessionBuilder
       },
-      unset: (name: keyof Data) => {
+      unset: (name: keyof Data & string) => {
         session.unset(name)
         return sessionBuilder
       },
