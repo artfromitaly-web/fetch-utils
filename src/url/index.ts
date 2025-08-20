@@ -11,11 +11,20 @@ export function getRootDomain(request: string | Request | URL) {
 export function getProtocol(request: string | Request | URL) {
   if (request instanceof Request) {
     const fwdProtocol = request.headers.get('x-forwarded-proto')
-    if (fwdProtocol) return fwdProtocol
+    if (fwdProtocol) return asFetchProtocol(`${fwdProtocol}:`)
 
     return getProtocol(request.url)
   }
 
   const url = typeof request === 'string' ? new URL(request) : request
-  return url.protocol
+  return asFetchProtocol(url.protocol as Protocol)
+}
+
+type Protocol = `${string}:`
+
+function asFetchProtocol(protocol: Protocol) {
+  if (protocol !== 'http:' && protocol !== 'https:') {
+    throw new Error(`Unsupported protocol ${protocol}`)
+  }
+  return protocol
 }
