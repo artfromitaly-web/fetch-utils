@@ -1,23 +1,32 @@
-export function getRootDomain(request: string | Request | URL) {
+/**
+ * @param resource Una stringa (rappresentante un URL assoluto), un oggetto Request o un oggetto URL da cui estrarre il dominio.
+ * @returns Il dominio radice (secondo e primo livello).
+ */
+export function getRootDomain(resource: string | Request | URL) {
   const { hostname } =
-    typeof request === 'string' ? new URL(request)
-    : request instanceof Request ? new URL(request.url)
-    : request
+    typeof resource === 'string' ? new URL(resource)
+    : resource instanceof Request ? new URL(resource.url)
+    : resource
   // TODO: gestire bug navigando tramite indirizzo IP
   const domainParts = hostname.split('.')
   return domainParts.length > 2 ? domainParts.slice(-2).join('.') : hostname
 }
 
-export function getProtocol(request: string | Request | URL) {
-  if (request instanceof Request) {
-    const fwdProtocol = request.headers.get('x-forwarded-proto')
+/**
+ * @param resource Una stringa (rappresentante un URL assoluto), un oggetto Request o un oggetto URL da cui estrarre il protocollo.
+ * @returns Il protocollo comprensivo di `":"` alla fine.
+ * @throws Error se il protocollo non è supportato da fetch.
+ */
+export function getProtocol(resource: string | Request | URL) {
+  if (resource instanceof Request) {
+    const fwdProtocol = resource.headers.get('x-forwarded-proto')
     if (fwdProtocol) return asFetchProtocol(`${fwdProtocol}:`)
 
-    return getProtocol(request.url)
+    return getProtocol(resource.url)
   }
 
-  const url = typeof request === 'string' ? new URL(request) : request
-  return asFetchProtocol(url.protocol as Protocol)
+  const { protocol } = typeof resource === 'string' ? new URL(resource) : resource
+  return asFetchProtocol(protocol as Protocol)
 }
 
 type Protocol = `${string}:`
