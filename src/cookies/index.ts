@@ -2,7 +2,8 @@ import { appendHeader, getHeader, type HeadersArguments } from '../headers/index
 
 type CookieIO<T> = {
   parse: (cookieHeader: string | null) => Promise<T | null>
-  serialize: (value: T) => Promise<string>
+  serialize(value: T, options?: never): Promise<string>
+  serialize(value: null, options: { maxAge: 0 }): Promise<string>
 }
 export type Cookie<T> = ReturnType<typeof cookie<T>>
 export function cookie<T>({ parse, serialize }: CookieIO<T>) {
@@ -10,6 +11,9 @@ export function cookie<T>({ parse, serialize }: CookieIO<T>) {
     read: (headers: Headers) => parse(getHeader(headers, 'Cookie')),
     write: async (value: T, headers?: Headers | Partial<HeadersArguments>) => {
       return saveOnHeaders(await serialize(value), headers)
+    },
+    delete: async (headers?: Headers | Partial<HeadersArguments>) => {
+      return saveOnHeaders(await serialize(null, { maxAge: 0 }), headers)
     }
   }
 }
