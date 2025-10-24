@@ -18,7 +18,7 @@ export function parseURL(request: Request) {
     originalProtocol: getProtocol(headers, url),
     originalHostname: getHostname(headers, url),
     rootDomain: getRootDomain(headers, url)
-  }
+  } as const
 }
 
 type Protocol = `${string}:`
