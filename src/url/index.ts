@@ -20,6 +20,7 @@ export function parseURL(request: Request) {
     rootDomain: getRootDomain(headers, url)
   } as const
 }
+export type ParsedURL = ReturnType<typeof parseURL>
 
 type Protocol = `${string}:`
 
